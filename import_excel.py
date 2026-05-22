@@ -31,6 +31,9 @@ for sheet_name in ["单选题", "多选题", "填空题", "判断题"]:
         elif qtype == "bool":
             seq, title, answer, analysis = row
             options = {"A": "对", "B": "错"}
+            # Convert 对/错 to option key A/B
+            raw = str(answer).strip()
+            ans = "A" if raw in ("对", "√", "T", "t", "True", "true", "TRUE") else "B"
 
         q = {
             "id": f"{qtype}-{order}",
@@ -38,7 +41,7 @@ for sheet_name in ["单选题", "多选题", "填空题", "判断题"]:
             "order": order,
             "title": str(title).strip() if title else "",
             "options": options,
-            "answer": str(answer).strip().upper() if answer else "",
+            "answer": ans if qtype == "bool" else (str(answer).strip().upper() if answer else ""),
             "analysis": str(analysis).strip() if analysis else "",
         }
         all_questions.append(q)

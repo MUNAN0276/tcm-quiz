@@ -129,10 +129,14 @@ export default function Quiz() {
   const checkAnswer = (userAnswer: string): boolean => {
     const ca = current.answer;
     if (current.type === 'fill') {
-      // For fill questions, check if the answer is contained in the user input
+      // Split correct answer by ；or ；, check each part loosely
+      const parts = ca.split(/[；;]/).map((p) => p.trim().replace(/\s+/g, '')).filter(Boolean);
       const normalized = userAnswer.trim().replace(/\s+/g, '');
-      const normalizedAns = ca.replace(/\s+/g, '');
-      return normalized === normalizedAns || normalized.includes(normalizedAns);
+      if (parts.length <= 1) {
+        return normalized === parts[0] || normalized.includes(parts[0] || '');
+      }
+      // Multi-part: all parts must appear in the user answer
+      return parts.every((p) => normalized.includes(p));
     }
     // For single/multiple/bool, compare sorted answers
     const user = userAnswer.split('').sort().join('');
@@ -280,7 +284,9 @@ export default function Quiz() {
           <div className="fb-row">
             {current.type === 'fill'
               ? current.answer
-              : current.answer.split('').map((k) => `${k}. ${current.options[k] || k}`).join('；')}
+              : current.type === 'bool'
+                ? current.options[current.answer] || current.answer
+                : current.answer.split('').map((k) => `${k}. ${current.options[k] || k}`).join('；')}
           </div>
         </div>
       )}
@@ -379,7 +385,9 @@ export default function Quiz() {
             <strong>正确答案：</strong>
             {current.type === 'fill'
               ? current.answer
-              : current.answer.split('').map((k) => `${k}. ${current.options[k] || k}`).join('；')}
+              : current.type === 'bool'
+                ? current.options[current.answer] || current.answer
+                : current.answer.split('').map((k) => `${k}. ${current.options[k] || k}`).join('；')}
           </div>
           {rec && (
             <div className="fb-row" style={{ fontSize: 13, color: 'var(--gray-500)' }}>
