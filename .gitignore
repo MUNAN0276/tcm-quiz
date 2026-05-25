@@ -5,6 +5,8 @@ __pycache__/
 .DS_Store
 screenshots/
 *.mjs
+*.tsbuildinfo
+single_choice_issue_report.md
 tk.xlsx
 ~$*.xlsx
 需求文档.md
